@@ -6,3 +6,5 @@ Memoria is a game launcher hosted locally on your computer. It has a folder name
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![Qt](https://img.shields.io/badge/Qt-%23217346.svg?style=for-the-badge&logo=Qt&logoColor=white)
 <br>
 ## How to use ?
+<table>
+</table>
