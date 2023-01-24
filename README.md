@@ -13,7 +13,3 @@
   * ***Create*** a folder with the name of the game 
   * ***Put*** the .exe file of the game (and other files linked to the game) inside the folder
 * When you've done all the things listed above just launch the .exe file and ***enjoy !!***
-
-## Warning !!
-This project use a MySQL DataBase, so in order to use it you have to create your own database (you can name it "memoria" like I did it in the code) containing a table name "files" with at least a columns containing the title of the game 
-
