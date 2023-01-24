@@ -99,7 +99,7 @@ class Ui_MainWindow(object):
         
         games = []
         print(os.getcwd())
-        for path in os.listdir(os.getcwd() + '/Memoria/Jeux/'):
+        for path in os.listdir(os.getcwd() + '/Jeux/'):
             games.append(str(path))
 
         i,j, z = 0,0,0
@@ -133,8 +133,8 @@ class Ui_MainWindow(object):
 
     def Launch(self, a):
         launched = False
-        os.chdir(dir + '/Memoria/Jeux/'+a)
-        for path2 in os.listdir(dir + '/Memoria/Jeux/'+a):
+        os.chdir(dir + '/Jeux/'+a)
+        for path2 in os.listdir(dir + '/Jeux/'+a):
                 if path2.endswith(".exe") and launched == False:
                         subprocess.Popen(path2)
                         launched = True
