@@ -9,19 +9,8 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import mysql.connector
 import os
 import subprocess
-
-mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="root",
-  database = "memoria"
-)
-
-mycursor = mydb.cursor()
-
 
 dir = os.getcwd()
 
@@ -107,20 +96,16 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-        self.SubmitButton.clicked.connect(lambda : self.ChatBot())
-        self.ReloadButton.clicked.connect(lambda : self.Reload())
         
-        mycursor.execute("TRUNCATE TABLE Files;")
-        for path in os.listdir(dir + '/Jeux/'):
-                mycursor.execute("INSERT INTO Files (title, dir) VALUES ('"+path+"', '"+dir+"/Jeux/"+path+"')")
-                mydb.commit()
-                           
-        mycursor.execute("SELECT title FROM Files")
+        games = []
+        print(os.getcwd())
+        for path in os.listdir(os.getcwd() + '/Memoria/Jeux/'):
+            games.append(str(path))
+
         i,j, z = 0,0,0
         self.btn = []
-        for x in mycursor:
-                title = x[0].split(" ")
+        for x in games:
+                title = x.split(" ")
                 word = ""
                 for k in range(len(title)):
                         title[k] = title[k].lower()
@@ -129,15 +114,16 @@ class Ui_MainWindow(object):
                 self.btn.append(z)
                 self.btn[z]= QtWidgets.QPushButton(self.centralwidget)
                 self.btn[z].setEnabled(True)
-                self.btn[z].setText('{0}'.format(x[0]))
+                self.btn[z].setText('{0}'.format(x))
                 self.btn[z].setStyleSheet("QPushButton{background-color : #F2F2EB;border-radius : 7px;}QPushButton:pressed{background-color : #D9D8D7;}")
                 self.btn[z].setGeometry(QtCore.QRect(10+i*160,80+j*190, 150,150))
-                self.btn[z].clicked.connect(lambda checked, a=x[0]: self.Launch(a))
+                self.btn[z].clicked.connect(lambda checked, a=x: self.Launch(a))
                 z += 1                                
                 i += 1
                 if i == 4:
                         i = 0
                         j += 1 
+        self.SubmitButton.clicked.connect(lambda : self.ChatBot(games))
         
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -147,67 +133,34 @@ class Ui_MainWindow(object):
 
     def Launch(self, a):
         launched = False
-        os.chdir(dir + '/Jeux/'+a)
-        for path2 in os.listdir(dir + '/Jeux/'+a):
+        os.chdir(dir + '/Memoria/Jeux/'+a)
+        for path2 in os.listdir(dir + '/Memoria/Jeux/'+a):
                 if path2.endswith(".exe") and launched == False:
                         subprocess.Popen(path2)
                         launched = True
         
-    def ChatBot(self):
+    def ChatBot(self, games):
         request = self.UserTextPanel.toPlainText() #get text from user
         word = str(request)
-        mycursor.execute("SELECT title FROM files WHERE title = '"+ word +"'")
-        myresult = ""
-        for x in mycursor:
-            myresult += x[0]
-        title = x[0].split(" ")
+        x = games.index(word)
+        title = games[x].split(" ")
         word2 = ""
         for k in range(len(title)):
                 title[k] = title[k].lower()
                 word2 += title[k]
                                
-        mycursor.execute("SELECT title FROM Files")
         z = 0
-        for x in mycursor:
+        for x in games:
                 mot = ""
-                for i in range (len(x[0].split(" "))): mot += x[0].split(" ")[i].lower()
+                for i in range (len(x.split(" "))): mot += x.split(" ")[i].lower()
                 if mot != word2:
                         self.btn[z].hide()
                 else:
                         self.btn[z].show()
                         self.btn[z].setGeometry(QtCore.QRect(10, 80, 150, 150))
                 z += 1         
-                        
-    def Reload(self):
-        mycursor.execute("TRUNCATE TABLE Files;")
-        for path in os.listdir(dir + '/Jeux/'):
-                mycursor.execute("INSERT INTO Files (title, dir) VALUES ('"+path+"', '"+dir+"/Jeux/"+path+"')")
-                mydb.commit()
-                           
-        mycursor.execute("SELECT title FROM Files")
-        i,j = 0,0
-        for x in mycursor:
-                title = x[0].split(" ")
-                word = ""
-                for k in range(len(title)):
-                        title[k] = title[k].lower()
-                        word += title[k]
-                                        
-                exec("self.%s = QtWidgets.QPushButton(self.centralwidget)"%word)
-                exec("self.%s.setEnabled(True)"%word)
-                exec("self.%s.setGeometry(QtCore.QRect(%d, %d, 150, 150))"%(word, 10+i*160, 80+j*190))
-                exec("self.%s.setText('%s',"")"%(word,x[0]))
-                exec('self.%s.setStyleSheet("QPushButton{background-color : #F2F2EB;border-radius : 7px;}QPushButton:pressed{background-color : #D9D8D7;}")'%word)
-                exec("self.%s.setObjectName('SubmitButton')"%(word))
-                exec("self.%s.show()"%word)
-                exec("self.%s.clicked.connect(lambda : %s)"%(word,"self.ChatBot()"))
                 
-                i += 1
-                if i == 4:
-                        i = 0
-                        j += 1   
-                        
-                        
+                               
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
